@@ -3,15 +3,30 @@ require 'omniauth-oauth2'
 module OmniAuth
   module Strategies
     class Instagram < OmniAuth::Strategies::OAuth2
+      
+      option :name, 'instagram'
+
       option :client_options, {
-        :site => 'https://api.instagram.com',
-        :authorize_url => 'https://api.instagram.com/oauth/authorize',
-        :token_url => 'https://api.instagram.com/oauth/access_token'
+        :site => 'https://instagram.com',
+        :authorize_url => 'https://instagram.com/oauth/authorize',
+        :token_url => 'https://instagram.com/oauth/access_token'
+      }
+
+      option :authorize_params, {
+        :scope => 'basic',
+        :response_type => 'code'
+      }
+
+      option :token_params, {
+        :parse => :json
+      }
+
+      option :access_token_options, {
+        :header_format => 'OAuth %s',
+        :param_name => 'access_token'
       }
 
       def request_phase
-        options[:scope] ||= 'basic'
-        options[:response_type] ||= 'code'
         super
       end
 
@@ -19,12 +34,9 @@ module OmniAuth
 
       info do
         {
-          'nickname' => raw_info['username'],
+          'username' => raw_info['username'],
           'name'     => raw_info['full_name'],
-          'email'    => raw_info['email'],
-          'image'    => raw_info['profile_picture'],
-          'bio'      => raw_info['bio'],
-          'website'  => raw_info['website'],
+          'profile_picture'    => raw_info['profile_picture']
         }
       end
 
@@ -37,6 +49,7 @@ module OmniAuth
         end
         @data
       end
+
     end
   end
 end
